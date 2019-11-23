@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/repository.dart';
+import 'package:last_fm/presentation/screens/main/albums/albums_fragment.dart';
+import 'package:last_fm/presentation/screens/main/artists/artists_fragment.dart';
 import 'package:last_fm/presentation/screens/main/main_bloc.dart';
 import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_fragment.dart';
 import 'package:last_fm/presentation/screens/main/tracks/tracks_fragment.dart';
@@ -22,6 +24,8 @@ class _MainPageState extends State<MainPage> {
 
   ScrobblesFragment _scrobblesFragment = ScrobblesFragment();
   TracksFragment _tracksFragment = TracksFragment();
+  ArtistsFragment _artistsFragment = ArtistsFragment();
+  AlbumsFragment _albumsFragment = AlbumsFragment();
 
   MainBloc _mainBloc = MainBloc(BlocProvider.getBloc<Repository>());
 
@@ -63,12 +67,8 @@ class _MainPageState extends State<MainPage> {
           body: TabBarView(
             children: [
               _scrobblesFragment,
-              new Container(
-                color: Colors.purple,
-              ),
-              new Container(
-                color: Colors.lightGreen,
-              ),
+              _artistsFragment,
+              _albumsFragment,
               _tracksFragment,
             ],
           ),

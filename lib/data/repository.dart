@@ -10,6 +10,8 @@ import 'package:last_fm/exceptions/exceptions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../constants.dart';
+import 'models/response_topalbums.dart';
+import 'models/response_topartists.dart';
 import 'models/response_toptracks.dart';
 
 class Repository {
@@ -90,6 +92,24 @@ class Repository {
         .flatMap((userName) =>
             Observable.fromFuture(_apiService.getUserTracks(userName, "7day")))
         .map((response) => ResponseTopTracks.fromJson(
+            json.decode(utf8.decode(response.bodyBytes))))
+        .asBroadcastStream();
+  }
+
+  Observable<ResponseTopArtists> getArtists() {
+    return Observable.just(_preferences.getUserName())
+        .flatMap((userName) =>
+            Observable.fromFuture(_apiService.getUserArtists(userName, "7day")))
+        .map((response) => ResponseTopArtists.fromJson(
+            json.decode(utf8.decode(response.bodyBytes))))
+        .asBroadcastStream();
+  }
+
+  Observable<ResponseTopAlbums> getAlbums() {
+    return Observable.just(_preferences.getUserName())
+        .flatMap((userName) =>
+            Observable.fromFuture(_apiService.getUserAlbums(userName, "7day")))
+        .map((response) => ResponseTopAlbums.fromJson(
             json.decode(utf8.decode(response.bodyBytes))))
         .asBroadcastStream();
   }
