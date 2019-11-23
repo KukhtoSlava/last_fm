@@ -35,13 +35,13 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
     setState(() {
       widget._tracks = tracks;
       _refreshController.refreshCompleted();
+      widget._initial = false;
     });
   }
 
   @override
   void initState() {
     _refreshController = RefreshController(initialRefresh: widget._initial);
-    widget._initial = false;
     super.initState();
   }
 
@@ -82,10 +82,18 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
             itemCount: widget._tracks.length,
             itemBuilder: (BuildContext context, int index) {
               Track track = widget._tracks[index];
+              String date;
+              if (track.date == null) {
+                date = "Playing now";
+              } else {
+                date = track.date.text;
+              }
               return Card(
+                clipBehavior: Clip.antiAlias,
                 color: Colors.black38,
                 elevation: 5,
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(
                       width: 5,
@@ -99,7 +107,8 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
                                 image: CachedNetworkImageProvider(
                                     track.image[3].text),
                                 fit: BoxFit.cover))),
-                    Padding(
+                    Flexible(
+                        child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -107,6 +116,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
                         children: <Widget>[
                           Text(
                             track.name,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,
@@ -114,6 +124,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
                           ),
                           Text(
                             track.artist.text,
+                            overflow: TextOverflow.ellipsis,
                             style:
                                 TextStyle(fontSize: 14, color: Colors.white70),
                           ),
@@ -121,12 +132,13 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
                             height: 10,
                           ),
                           Text(
-                            track.date.text,
+                            date,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(fontSize: 14, color: Colors.white),
                           ),
                         ],
                       ),
-                    )
+                    ))
                   ],
                 ),
               );

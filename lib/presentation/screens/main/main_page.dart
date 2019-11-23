@@ -6,6 +6,7 @@ import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/main_bloc.dart';
 import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_fragment.dart';
+import 'package:last_fm/presentation/screens/main/tracks/tracks_fragment.dart';
 import 'package:last_fm/presentation/screens/splash/splash_page.dart';
 import 'package:last_fm/presentation/widgets/PNetworkImage.dart';
 import 'package:last_fm/presentation/widgets/custom_icons_icons.dart';
@@ -20,6 +21,7 @@ class _MainPageState extends State<MainPage> {
   CompositeSubscription _compositeSubscription = CompositeSubscription();
 
   ScrobblesFragment _scrobblesFragment = ScrobblesFragment();
+  TracksFragment _tracksFragment = TracksFragment();
 
   MainBloc _mainBloc = MainBloc(BlocProvider.getBloc<Repository>());
 
@@ -67,9 +69,7 @@ class _MainPageState extends State<MainPage> {
               new Container(
                 color: Colors.lightGreen,
               ),
-              new Container(
-                color: Colors.blueAccent,
-              ),
+              _tracksFragment,
             ],
           ),
           bottomNavigationBar: new TabBar(

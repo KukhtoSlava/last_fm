@@ -4,12 +4,12 @@ import 'package:last_fm/data/repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ScrobblesBloc extends BlocBase {
-  Repository _repository;
+Repository _repository;
 
-  ScrobblesBloc(repository) {
-    this._repository = repository;
-  }
+ScrobblesBloc(repository) {
+  this._repository = repository;
+}
 
-  Observable<ResponseRecentTracks> getRecentTracks() =>
-      _repository.getRecentTracks();
+Observable<ResponseRecentTracks> getRecentTracks() =>
+    _repository.getRecentTracks();
 }

@@ -1,30 +1,30 @@
-class ResponseRecentTracks {
-  Recenttracks recenttracks;
+class ResponseTopTracks {
+  Toptracks toptracks;
 
-  ResponseRecentTracks({this.recenttracks});
+  ResponseTopTracks({this.toptracks});
 
-  ResponseRecentTracks.fromJson(Map<String, dynamic> json) {
-    recenttracks = json['recenttracks'] != null
-        ? new Recenttracks.fromJson(json['recenttracks'])
+  ResponseTopTracks.fromJson(Map<String, dynamic> json) {
+    toptracks = json['toptracks'] != null
+        ? new Toptracks.fromJson(json['toptracks'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.recenttracks != null) {
-      data['recenttracks'] = this.recenttracks.toJson();
+    if (this.toptracks != null) {
+      data['toptracks'] = this.toptracks.toJson();
     }
     return data;
   }
 }
 
-class Recenttracks {
+class Toptracks {
   Attr attr;
   List<Track> track;
 
-  Recenttracks({this.attr, this.track});
+  Toptracks({this.attr, this.track});
 
-  Recenttracks.fromJson(Map<String, dynamic> json) {
+  Toptracks.fromJson(Map<String, dynamic> json) {
     attr = json['@attr'] != null ? new Attr.fromJson(json['@attr']) : null;
     if (json['track'] != null) {
       track = new List<Track>();
@@ -75,101 +75,104 @@ class Attr {
 }
 
 class Track {
-  Artist artist;
   TrackAttr attr;
-  String mbid;
-  Artist album;
-  String streamable;
-  String url;
-  String name;
+  String duration;
+  String playcount;
+  Artist artist;
   List<Image> image;
-  Date date;
+  Streamable streamable;
+  String mbid;
+  String name;
+  String url;
 
   Track(
-      {this.artist,
-      this.attr,
-      this.mbid,
-      this.album,
-      this.streamable,
-      this.url,
-      this.name,
+      {this.attr,
+      this.duration,
+      this.playcount,
+      this.artist,
       this.image,
-      this.date});
+      this.streamable,
+      this.mbid,
+      this.name,
+      this.url});
 
   Track.fromJson(Map<String, dynamic> json) {
+    attr = json['@attr'] != null ? new TrackAttr.fromJson(json['@attr']) : null;
+    duration = json['duration'];
+    playcount = json['playcount'];
     artist =
         json['artist'] != null ? new Artist.fromJson(json['artist']) : null;
-    attr = json['@attr'] != null ? new TrackAttr.fromJson(json['@attr']) : null;
-    mbid = json['mbid'];
-    album = json['album'] != null ? new Artist.fromJson(json['album']) : null;
-    streamable = json['streamable'];
-    url = json['url'];
-    name = json['name'];
     if (json['image'] != null) {
       image = new List<Image>();
       json['image'].forEach((v) {
         image.add(new Image.fromJson(v));
       });
     }
-    date = json['date'] != null ? new Date.fromJson(json['date']) : null;
+    streamable = json['streamable'] != null
+        ? new Streamable.fromJson(json['streamable'])
+        : null;
+    mbid = json['mbid'];
+    name = json['name'];
+    url = json['url'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.artist != null) {
-      data['artist'] = this.artist.toJson();
-    }
     if (this.attr != null) {
       data['@attr'] = this.attr.toJson();
     }
-    data['mbid'] = this.mbid;
-    if (this.album != null) {
-      data['album'] = this.album.toJson();
+    data['duration'] = this.duration;
+    data['playcount'] = this.playcount;
+    if (this.artist != null) {
+      data['artist'] = this.artist.toJson();
     }
-    data['streamable'] = this.streamable;
-    data['url'] = this.url;
-    data['name'] = this.name;
     if (this.image != null) {
       data['image'] = this.image.map((v) => v.toJson()).toList();
     }
-    if (this.date != null) {
-      data['date'] = this.date.toJson();
+    if (this.streamable != null) {
+      data['streamable'] = this.streamable.toJson();
     }
-    return data;
-  }
-}
-
-class Artist {
-  String mbid;
-  String text;
-
-  Artist({this.mbid, this.text});
-
-  Artist.fromJson(Map<String, dynamic> json) {
-    mbid = json['mbid'];
-    text = json['#text'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['mbid'] = this.mbid;
-    data['#text'] = this.text;
+    data['name'] = this.name;
+    data['url'] = this.url;
     return data;
   }
 }
 
 class TrackAttr {
-  String nowplaying;
+  String rank;
 
-  TrackAttr({this.nowplaying});
+  TrackAttr({this.rank});
 
   TrackAttr.fromJson(Map<String, dynamic> json) {
-    nowplaying = json['nowplaying'];
+    rank = json['rank'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['nowplaying'] = this.nowplaying;
+    data['rank'] = this.rank;
+    return data;
+  }
+}
+
+class Artist {
+  String url;
+  String name;
+  String mbid;
+
+  Artist({this.url, this.name, this.mbid});
+
+  Artist.fromJson(Map<String, dynamic> json) {
+    url = json['url'];
+    name = json['name'];
+    mbid = json['mbid'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['url'] = this.url;
+    data['name'] = this.name;
+    data['mbid'] = this.mbid;
     return data;
   }
 }
@@ -193,20 +196,20 @@ class Image {
   }
 }
 
-class Date {
-  String uts;
+class Streamable {
+  String fulltrack;
   String text;
 
-  Date({this.uts, this.text});
+  Streamable({this.fulltrack, this.text});
 
-  Date.fromJson(Map<String, dynamic> json) {
-    uts = json['uts'];
+  Streamable.fromJson(Map<String, dynamic> json) {
+    fulltrack = json['fulltrack'];
     text = json['#text'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uts'] = this.uts;
+    data['fulltrack'] = this.fulltrack;
     data['#text'] = this.text;
     return data;
   }

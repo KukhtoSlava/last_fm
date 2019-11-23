@@ -10,6 +10,7 @@ import 'package:last_fm/exceptions/exceptions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../constants.dart';
+import 'models/response_toptracks.dart';
 
 class Repository {
   ApiService _apiService;
@@ -41,7 +42,8 @@ class Repository {
             "api_key${API_KEY}methodauth.getMobileSessionpassword${password}username$userName$SECRET"))
         .flatMap((sig) => Observable.fromFuture(
             _apiService.userAuth(userName, password, sig)))
-        .map((item) => ResponseAuth.fromJson(json.decode(item.body)))
+        .map((item) =>
+            ResponseAuth.fromJson(json.decode(utf8.decode(item.bodyBytes))))
         .map((body) {
       if (body.session == null) {
         throw UnauthorizedException("Incorrect login or password");
@@ -78,8 +80,17 @@ class Repository {
     return Observable.just(_preferences.getUserName())
         .flatMap((userName) =>
             Observable.fromFuture(_apiService.getUserRecentTracks(userName)))
-        .map((response) =>
-            ResponseRecentTracks.fromJson(json.decode(response.body)))
+        .map((response) => ResponseRecentTracks.fromJson(
+            json.decode(utf8.decode(response.bodyBytes))))
+        .asBroadcastStream();
+  }
+
+  Observable<ResponseTopTracks> getTracks() {
+    return Observable.just(_preferences.getUserName())
+        .flatMap((userName) =>
+            Observable.fromFuture(_apiService.getUserTracks(userName, "7day")))
+        .map((response) => ResponseTopTracks.fromJson(
+            json.decode(utf8.decode(response.bodyBytes))))
         .asBroadcastStream();
   }
 }
