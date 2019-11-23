@@ -17,6 +17,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> implements MainView {
+  ScrobblesFragment _scrobblesFragment = ScrobblesFragment();
+
   MainPresenter _mainPresenter =
       MainPresenter(BlocProvider.getBloc<Repository>());
 
@@ -33,7 +35,6 @@ class _MainPageState extends State<MainPage> implements MainView {
   }
 
   String _convertTime(int timestamp) {
-    var now = new DateTime.now();
     var format = new DateFormat('dd.MM.yyyy');
     var date = new DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     return format.format(date);
@@ -64,7 +65,7 @@ class _MainPageState extends State<MainPage> implements MainView {
         child: new Scaffold(
           body: TabBarView(
             children: [
-              new Container(child: new ScrobblesFragment()),
+              _scrobblesFragment,
               new Container(
                 color: Colors.purple,
               ),

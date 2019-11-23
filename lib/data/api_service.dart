@@ -16,4 +16,21 @@ class ApiService {
           String userName, String password, String apiSig) async =>
       _client.post(
           "https://ws.audioscrobbler.com/2.0/?method=auth.getMobileSession&username=$userName&password=$password&api_sig=$apiSig&format=json&api_key=$API_KEY");
+
+  Future<
+      http
+          .Response> getUserRecentTracks(String userName) async => _client.get(
+      "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$userName&api_key=$API_KEY&format=json");
+
+  Future<http.Response> getUserAlbums(String userName, String period) async =>
+      _client.get(
+          "https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=$userName&api_key=$API_KEY&format=json&period=$period");
+
+  Future<http.Response> getUserArtists(String userName, String period) async =>
+      _client.get(
+          "https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=$userName&api_key=$API_KEY&format=json&period=$period");
+
+  Future<http.Response> getUserTracks(String userName, String period) async =>
+      _client.get(
+          "https://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&user=$userName&api_key=$API_KEY&format=json&period=$period");
 }

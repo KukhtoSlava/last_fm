@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:last_fm/data/api_service.dart';
 import 'package:last_fm/data/models/response_auth.dart';
+import 'package:last_fm/data/models/response_recenttracks.dart';
 import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/preferences.dart';
 import 'package:last_fm/data/system.dart';
@@ -28,6 +29,7 @@ class Repository {
         .flatMap((item) =>
             Observable.fromFuture(_preferences.setUserProfile(item.body)))
         .map((profile) => _preferences.getUserProfile())
+        .onErrorResumeNext(Observable.just(_preferences.getUserProfile()))
         .map((profile) => ResponseUser.fromJson(json.decode(profile)))
         .asBroadcastStream();
   }
@@ -69,6 +71,15 @@ class Repository {
     return Observable.fromFuture(_preferences.removeUserName())
         .flatMap(
             (result) => Observable.fromFuture(_preferences.removeUserProfile()))
+        .asBroadcastStream();
+  }
+
+  Observable<ResponseRecentTracks> getRecentTracks() {
+    return Observable.just(_preferences.getUserName())
+        .flatMap((userName) =>
+            Observable.fromFuture(_apiService.getUserRecentTracks(userName)))
+        .map((response) =>
+            ResponseRecentTracks.fromJson(json.decode(response.body)))
         .asBroadcastStream();
   }
 }
