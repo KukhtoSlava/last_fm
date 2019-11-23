@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/main_page.dart';
 import 'package:last_fm/presentation/screens/preview/login_page.dart';
-import 'package:last_fm/presentation/screens/splash/splash_presenter.dart';
-import 'package:last_fm/presentation/screens/splash/splash_view.dart';
+import 'package:last_fm/presentation/screens/splash/splash_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -12,9 +12,9 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage>
-    with SingleTickerProviderStateMixin
-    implements SplashView {
-  SplashPresenter _splashPresenter;
+    with SingleTickerProviderStateMixin {
+  CompositeSubscription _compositeSubscription = CompositeSubscription();
+  SplashBloc _splashBloc = SplashBloc(BlocProvider.getBloc<Repository>());
 
   AnimationController controller;
   Animation<double> animation;
@@ -27,13 +27,24 @@ class _SplashPageState extends State<SplashPage>
           ..addListener(() => setState(() {}));
     animation = Tween(begin: 800.0, end: 0.0).animate(controller);
     controller.forward();
-    _splashPresenter = SplashPresenter(BlocProvider.getBloc<Repository>());
-    _splashPresenter.init(this);
+    _compositeSubscription
+        .add(_splashBloc.getUserName().listen((name) => _handleName(name)));
+  }
+
+  _handleName(String userName) {
+    if (userName == "") {
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          builder: (BuildContext context) => new LoginPage()));
+    } else {
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          builder: (BuildContext context) => new MainPage()));
+    }
   }
 
   @override
   void dispose() {
     controller.dispose();
+    _compositeSubscription.dispose();
     super.dispose();
   }
 
@@ -96,17 +107,5 @@ class _SplashPageState extends State<SplashPage>
             ],
           ),
         ));
-  }
-
-  @override
-  openLogin() {
-    Navigator.of(context).pushReplacement(new MaterialPageRoute(
-        builder: (BuildContext context) => new LoginPage()));
-  }
-
-  @override
-  openMain() {
-    Navigator.of(context).pushReplacement(new MaterialPageRoute(
-        builder: (BuildContext context) => new MainPage()));
   }
 }

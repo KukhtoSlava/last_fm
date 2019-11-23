@@ -105,7 +105,7 @@ class Track {
       });
     }
     streamable = json['streamable'];
-    date = json['date'] != null ? new Date.fromJson(json['date']) : null;
+    date = json['date'] != null ? new Date.fromJson(json['date']) : Date();
     url = json['url'];
     name = json['name'];
     mbid = json['mbid'];

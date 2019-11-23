@@ -4,40 +4,35 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/repository.dart';
-import 'package:last_fm/presentation/screens/main/main_presenter.dart';
-import 'package:last_fm/presentation/screens/main/main_view.dart';
+import 'package:last_fm/presentation/screens/main/main_bloc.dart';
 import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_fragment.dart';
 import 'package:last_fm/presentation/screens/splash/splash_page.dart';
 import 'package:last_fm/presentation/widgets/PNetworkImage.dart';
 import 'package:last_fm/presentation/widgets/custom_icons_icons.dart';
+import 'package:rxdart/rxdart.dart';
 
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> implements MainView {
+class _MainPageState extends State<MainPage> {
+  CompositeSubscription _compositeSubscription = CompositeSubscription();
+
   ScrobblesFragment _scrobblesFragment = ScrobblesFragment();
 
-  MainPresenter _mainPresenter =
-      MainPresenter(BlocProvider.getBloc<Repository>());
-
-  @override
-  openSplash() {
-    Navigator.of(context).pushReplacement(new MaterialPageRoute(
-        builder: (BuildContext context) => new SplashPage()));
-  }
-
-  @override
-  void initState() {
-    _mainPresenter.init(this);
-    super.initState();
-  }
+  MainBloc _mainBloc = MainBloc(BlocProvider.getBloc<Repository>());
 
   String _convertTime(int timestamp) {
     var format = new DateFormat('dd.MM.yyyy');
     var date = new DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     return format.format(date);
+  }
+
+  @override
+  void dispose() {
+    _compositeSubscription.dispose();
+    super.dispose();
   }
 
   @override
@@ -108,7 +103,7 @@ class _MainPageState extends State<MainPage> implements MainView {
   Widget _buildDrawer() {
     ResponseUser response;
     return StreamBuilder<ResponseUser>(
-      stream: _mainPresenter.getUserInfo(),
+      stream: _mainBloc.getUserInfo(),
       builder: (context, snappShot) {
         String url = "";
         String name = "";
@@ -159,7 +154,7 @@ class _MainPageState extends State<MainPage> implements MainView {
                 ),
                 ListTile(
                   onTap: () {
-                    _mainPresenter.logOutClicked();
+                    _logOutClicked();
                   },
                   title: Text("Log out"),
                   leading: Icon(Icons.exit_to_app),
@@ -170,5 +165,11 @@ class _MainPageState extends State<MainPage> implements MainView {
         ]);
       },
     );
+  }
+
+  _logOutClicked() {
+    _compositeSubscription.add(_mainBloc.logOut().listen((result) =>
+        Navigator.of(context).pushReplacement(new MaterialPageRoute(
+            builder: (BuildContext context) => new SplashPage()))));
   }
 }

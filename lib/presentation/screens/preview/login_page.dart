@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:last_fm/data/repository.dart';
+import 'package:last_fm/exceptions/exceptions.dart';
 import 'package:last_fm/presentation/screens/main/main_page.dart';
-import 'package:last_fm/presentation/screens/preview/login_presenter.dart';
-import 'package:last_fm/presentation/screens/preview/login_view.dart';
+import 'package:last_fm/presentation/screens/preview/login_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,58 +15,21 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> implements LoginView {
-  LoginPresenter _loginPresenter;
-  TextEditingController _textEditingControllerName;
-  TextEditingController _textEditingControllerPassword;
-
-  @override
-  void initState() {
-    _textEditingControllerName = TextEditingController();
-    _textEditingControllerPassword = TextEditingController();
-    _loginPresenter = LoginPresenter(BlocProvider.getBloc<Repository>());
-    _loginPresenter.init(this);
-    super.initState();
-  }
+class _LoginPageState extends State<LoginPage> {
+  CompositeSubscription _compositeSubscription = CompositeSubscription();
+  LoginBloc _loginBloc = LoginBloc(BlocProvider.getBloc<Repository>());
+  TextEditingController _textEditingControllerName = TextEditingController();
+  TextEditingController _textEditingControllerPassword =
+      TextEditingController();
+  String _name = "";
+  String _password = "";
 
   @override
   void dispose() {
     _textEditingControllerName.dispose();
     _textEditingControllerPassword.dispose();
+    _compositeSubscription.dispose();
     super.dispose();
-  }
-
-  @override
-  setName(String name) {
-    _textEditingControllerName.text = name;
-  }
-
-  @override
-  setPassword(String password) {
-    _textEditingControllerPassword.text = password;
-  }
-
-  @override
-  openMain() {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => MainPage()));
-  }
-
-  @override
-  showToast(String message) {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-
-  @override
-  hideKeyboard() {
-    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   @override
@@ -123,7 +89,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 32),
             child: StreamBuilder<StatusLoading>(
-                stream: _loginPresenter.getStatus(),
+                stream: _loginBloc.getStatus(),
                 builder: (context, snappShot) {
                   if ((snappShot != null && !snappShot.hasData) ||
                       snappShot.data == StatusLoading.none) {
@@ -134,7 +100,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
                         enabled: true,
                         controller: _textEditingControllerName,
                         onChanged: (String value) {
-                          _loginPresenter.changedName(value);
+                          _name = value;
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
@@ -161,7 +127,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
                         enabled: false,
                         controller: _textEditingControllerName,
                         onChanged: (String value) {
-                          _loginPresenter.changedName(value);
+                          _name = value;
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
@@ -189,7 +155,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 32),
             child: StreamBuilder<StatusLoading>(
-                stream: _loginPresenter.getStatus(),
+                stream: _loginBloc.getStatus(),
                 builder: (context, snappShot) {
                   if ((snappShot != null && !snappShot.hasData) ||
                       snappShot.data == StatusLoading.none) {
@@ -201,7 +167,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
                         enabled: true,
                         controller: _textEditingControllerPassword,
                         onChanged: (String value) {
-                          _loginPresenter.changedPassword(value);
+                          _password = value;
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
@@ -229,7 +195,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
                         enabled: false,
                         controller: _textEditingControllerPassword,
                         onChanged: (String value) {
-                          _loginPresenter.changedPassword(value);
+                          _password = value;
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
@@ -257,7 +223,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 32),
             child: StreamBuilder<StatusLoading>(
-                stream: _loginPresenter.getStatus(),
+                stream: _loginBloc.getStatus(),
                 builder: (context, snappShot) {
                   if ((snappShot != null && !snappShot.hasData) ||
                       snappShot.data == StatusLoading.none) {
@@ -275,7 +241,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
                                   fontSize: 18),
                             ),
                             onPressed: () {
-                              _loginPresenter.onLoginClicked();
+                              _loginClicked();
                             }));
                   } else {
                     return Container(
@@ -351,12 +317,57 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
     );
   }
 
+  _openMain() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => MainPage()));
+  }
+
+  _showToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
+  _hideKeyboard() {
+    FocusScope.of(context).requestFocus(FocusNode());
+  }
+
+  _loginClicked() {
+    _hideKeyboard();
+    if (_name == "" || _password == "") {
+      _showToast("Empty Fields!");
+      return;
+    }
+    _compositeSubscription.add(_loginBloc
+        .login(_name, _password)
+        .listen((name) => _openMain(), onError: (e, s) => _handleError(e)));
+  }
+
+  _handleError(dynamic error) {
+    String errorMessage;
+    if (error is UnauthorizedException) {
+      errorMessage = error.cause;
+    } else if (error is SocketException) {
+      errorMessage = "Network connection problem";
+    } else {
+      errorMessage = error.toString();
+    }
+    _textEditingControllerName.text = _name;
+    _textEditingControllerPassword.text = _password;
+    _showToast(errorMessage);
+  }
+
   _forgotPasswordURL() async {
     const url = 'https://www.last.fm/settings/lostpassword';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      throw 'Could not launch $url';
+      _showToast("Could not launch $url");
     }
   }
 
@@ -365,7 +376,7 @@ class _LoginPageState extends State<LoginPage> implements LoginView {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      throw 'Could not launch $url';
+      _showToast("Could not launch $url");
     }
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:last_fm/data/models/response_recenttracks.dart';
 import 'package:last_fm/data/repository.dart';
-import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_viewmodel.dart';
+import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
 
