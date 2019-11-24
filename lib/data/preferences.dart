@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
+import 'enums/enums.dart';
 
 class Preferences {
   SharedPreferences _prefs;
@@ -43,5 +44,17 @@ class Preferences {
 
   Future<bool> removeUserProfile() {
     return _prefs.remove(PREFS_USER_PROFILE);
+  }
+
+  Future<bool> setPeriod(Period period) {
+    return _prefs.setString(PREFS_PERIOD, PeriodHelper.getValue(period));
+  }
+
+  Period getPeriod() {
+    if (_prefs.containsKey(PREFS_PERIOD)) {
+      return PeriodHelper.getPeriod(_prefs.get(PREFS_PERIOD));
+    } else {
+      return Period.overall;
+    }
   }
 }

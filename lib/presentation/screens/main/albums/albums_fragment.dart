@@ -11,10 +11,19 @@ import 'package:rxdart/rxdart.dart';
 class AlbumsFragment extends StatefulWidget {
   List<Album> _albums = [];
 
-  bool _initial = true;
+  bool initial = true;
+
+  AlbumsFragmentState _albumsFragmentState;
+
+  updateScreen() {
+    _albumsFragmentState._refreshController.requestRefresh();
+  }
 
   @override
-  State<StatefulWidget> createState() => AlbumsFragmentState();
+  State<StatefulWidget> createState() {
+    _albumsFragmentState = AlbumsFragmentState();
+    return _albumsFragmentState;
+  }
 }
 
 class AlbumsFragmentState extends State<AlbumsFragment> {
@@ -34,19 +43,20 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
     setState(() {
       widget._albums = artists;
       _refreshController.refreshCompleted();
-      widget._initial = false;
+      widget.initial = false;
     });
   }
 
   @override
   void initState() {
-    _refreshController = RefreshController(initialRefresh: widget._initial);
+    _refreshController = RefreshController(initialRefresh: widget.initial);
     super.initState();
   }
 
   @override
   void dispose() {
     _compositeSubscription.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -65,11 +75,11 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
               body = Text(
                 "See more...",
                 style: TextStyle(fontSize: 18, color: Colors.white70),
-                textAlign: TextAlign.end,
               );
               return Container(
+                alignment: AlignmentDirectional(1.0, 0.0),
                 margin: new EdgeInsets.only(right: 25.0),
-                height: 55.0,
+                height: 60.0,
                 child: body,
               );
             },
@@ -83,6 +93,13 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
             itemCount: widget._albums.length,
             itemBuilder: (BuildContext context, int index) {
               Album album = widget._albums[index];
+              String url;
+              if (album.image[3].text == "") {
+                url =
+                    "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+              } else {
+                url = album.image[3].text;
+              }
               return Container(
                 padding: const EdgeInsets.all(4.0),
                 child: Stack(
@@ -93,8 +110,7 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                    album.image[3].text),
+                                image: CachedNetworkImageProvider(url),
                                 fit: BoxFit.cover))),
                     Container(
                         padding: const EdgeInsets.all(3.0),

@@ -10,6 +10,7 @@ import 'package:last_fm/exceptions/exceptions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../constants.dart';
+import 'enums/enums.dart';
 import 'models/response_topalbums.dart';
 import 'models/response_topartists.dart';
 import 'models/response_toptracks.dart';
@@ -58,7 +59,7 @@ class Repository {
   Observable<String> getUserName() {
     return Observable.just("")
         .delay(Duration(
-            seconds: 1)) //hack need to init sharedpreferences in splash
+            seconds: 3)) //hack need to init sharedpreferences in splash
         .map((item) => _preferences.getUserName());
   }
 
@@ -89,8 +90,8 @@ class Repository {
 
   Observable<ResponseTopTracks> getTracks() {
     return Observable.just(_preferences.getUserName())
-        .flatMap((userName) =>
-            Observable.fromFuture(_apiService.getUserTracks(userName, "7day")))
+        .flatMap((userName) => Observable.fromFuture(_apiService.getUserTracks(
+            userName, PeriodHelper.getValue(_preferences.getPeriod()))))
         .map((response) => ResponseTopTracks.fromJson(
             json.decode(utf8.decode(response.bodyBytes))))
         .asBroadcastStream();
@@ -98,8 +99,8 @@ class Repository {
 
   Observable<ResponseTopArtists> getArtists() {
     return Observable.just(_preferences.getUserName())
-        .flatMap((userName) =>
-            Observable.fromFuture(_apiService.getUserArtists(userName, "7day")))
+        .flatMap((userName) => Observable.fromFuture(_apiService.getUserArtists(
+            userName, PeriodHelper.getValue(_preferences.getPeriod()))))
         .map((response) => ResponseTopArtists.fromJson(
             json.decode(utf8.decode(response.bodyBytes))))
         .asBroadcastStream();
@@ -107,10 +108,18 @@ class Repository {
 
   Observable<ResponseTopAlbums> getAlbums() {
     return Observable.just(_preferences.getUserName())
-        .flatMap((userName) =>
-            Observable.fromFuture(_apiService.getUserAlbums(userName, "7day")))
+        .flatMap((userName) => Observable.fromFuture(_apiService.getUserAlbums(
+            userName, PeriodHelper.getValue(_preferences.getPeriod()))))
         .map((response) => ResponseTopAlbums.fromJson(
             json.decode(utf8.decode(response.bodyBytes))))
         .asBroadcastStream();
+  }
+
+  Observable<bool> setPeriod(Period period) {
+    return Observable.fromFuture(_preferences.setPeriod(period));
+  }
+
+  Observable<Period> getPeriod(){
+    return Observable.just(_preferences.getPeriod());
   }
 }

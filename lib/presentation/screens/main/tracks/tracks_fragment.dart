@@ -11,10 +11,19 @@ import 'package:rxdart/rxdart.dart';
 class TracksFragment extends StatefulWidget {
   List<Track> _tracks = [];
 
-  bool _initial = true;
+  bool initial = true;
+
+  TracksFragmentState _tracksFragmentState;
+
+  updateScreen() {
+    _tracksFragmentState._refreshController.requestRefresh();
+  }
 
   @override
-  State<StatefulWidget> createState() => TracksFragmentState();
+  State<StatefulWidget> createState() {
+    _tracksFragmentState = TracksFragmentState();
+    return _tracksFragmentState;
+  }
 }
 
 class TracksFragmentState extends State<TracksFragment> {
@@ -34,19 +43,20 @@ class TracksFragmentState extends State<TracksFragment> {
     setState(() {
       widget._tracks = tracks;
       _refreshController.refreshCompleted();
-      widget._initial = false;
+      widget.initial = false;
     });
   }
 
   @override
   void initState() {
-    _refreshController = RefreshController(initialRefresh: widget._initial);
+    _refreshController = RefreshController(initialRefresh: widget.initial);
     super.initState();
   }
 
   @override
   void dispose() {
     _compositeSubscription.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -71,7 +81,7 @@ class TracksFragmentState extends State<TracksFragment> {
               );
               return Container(
                 margin: new EdgeInsets.only(right: 25.0),
-                height: 55.0,
+                height: 60.0,
                 child: body,
               );
             },

@@ -11,7 +11,7 @@ import 'package:rxdart/rxdart.dart';
 class ScrobblesFragment extends StatefulWidget {
   List<Track> _tracks = [];
 
-  bool _initial = true;
+  bool initial = true;
 
   @override
   State<StatefulWidget> createState() => ScrobblessFragmentState();
@@ -35,19 +35,20 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
     setState(() {
       widget._tracks = tracks;
       _refreshController.refreshCompleted();
-      widget._initial = false;
+      widget.initial = false;
     });
   }
 
   @override
   void initState() {
-    _refreshController = RefreshController(initialRefresh: widget._initial);
+    _refreshController = RefreshController(initialRefresh: widget.initial);
     super.initState();
   }
 
   @override
   void dispose() {
     _compositeSubscription.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -70,7 +71,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
               );
               return Container(
                 margin: new EdgeInsets.only(right: 25.0),
-                height: 55.0,
+                height: 60.0,
                 child: body,
               );
             },
@@ -84,7 +85,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
               Track track = widget._tracks[index];
               String date;
               if (track.date == null) {
-                date = "Playing now";
+                date = "Scrobling now";
               } else {
                 date = track.date.text;
               }

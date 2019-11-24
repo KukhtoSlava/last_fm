@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:last_fm/data/enums/enums.dart';
 import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/albums/albums_fragment.dart';
@@ -19,8 +20,13 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage>
+    with SingleTickerProviderStateMixin {
   CompositeSubscription _compositeSubscription = CompositeSubscription();
+
+  TabController _controller;
+
+  int _currentTabIndex = 0;
 
   ScrobblesFragment _scrobblesFragment = ScrobblesFragment();
   TracksFragment _tracksFragment = TracksFragment();
@@ -36,7 +42,19 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void initState() {
+    _controller = TabController(vsync: this, length: 4);
+    _controller.addListener(() {
+      _currentTabIndex = _controller.index;
+      _mainBloc.updateBar(_currentTabIndex);
+    });
+    _mainBloc.updateBar(_currentTabIndex);
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    _controller.dispose();
     _compositeSubscription.dispose();
     super.dispose();
   }
@@ -47,7 +65,41 @@ class _MainPageState extends State<MainPage> {
         theme: ThemeData(primarySwatch: Colors.red),
         home: Scaffold(
             appBar: AppBar(
-              title: Text(""),
+              centerTitle: true,
+              title: StreamBuilder(
+                  stream: _mainBloc.getPeriodText(),
+                  builder: (context, snappShot) {
+                    if ((snappShot != null && !snappShot.hasData)) {
+                      return Text(
+                        "Scrobbles",
+                        style: new TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 22.0),
+                      );
+                    }
+                    if (snappShot.data == "Scrobbles") {
+                      return Text(
+                        snappShot.data,
+                        style: new TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 22.0),
+                      );
+                    } else {
+                      return GestureDetector(
+                          onTap: () {
+                            _settingModalBottomSheet(context);
+                          },
+                          child: Text(
+                            "${snappShot.data}",
+                            style: new TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 22.0),
+                          ));
+                    }
+                  }),
             ),
             body: _buildBody(),
             drawer: new Drawer(
@@ -65,6 +117,7 @@ class _MainPageState extends State<MainPage> {
         length: 4,
         child: new Scaffold(
           body: TabBarView(
+            controller: _controller,
             children: [
               _scrobblesFragment,
               _artistsFragment,
@@ -73,6 +126,11 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           bottomNavigationBar: new TabBar(
+            controller: _controller,
+            onTap: (index) {
+              _currentTabIndex = index;
+              _mainBloc.updateBar(_currentTabIndex);
+            },
             tabs: [
               Tab(
                 icon: new Icon(Icons.format_list_bulleted),
@@ -105,7 +163,8 @@ class _MainPageState extends State<MainPage> {
     return StreamBuilder<ResponseUser>(
       stream: _mainBloc.getUserInfo(),
       builder: (context, snappShot) {
-        String url = "";
+        String url =
+            "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
         String name = "";
         String scrobbles = "";
         String date = "";
@@ -171,5 +230,79 @@ class _MainPageState extends State<MainPage> {
     _compositeSubscription.add(_mainBloc.logOut().listen((result) =>
         Navigator.of(context).pushReplacement(new MaterialPageRoute(
             builder: (BuildContext context) => new SplashPage()))));
+  }
+
+  _changePeriod(Period period) {
+    _compositeSubscription.add(
+        _mainBloc.setPeriod(period).listen((result) => _invalidateScreens()));
+  }
+
+  _invalidateScreens() {
+    _artistsFragment.initial = true;
+    _albumsFragment.initial = true;
+    _tracksFragment.initial = true;
+    _controller.index = _currentTabIndex;
+    if (_currentTabIndex == 1) {
+      _artistsFragment.updateScreen();
+    } else if (_currentTabIndex == 2) {
+      _albumsFragment.updateScreen();
+    } else if (_currentTabIndex == 3) {
+      _tracksFragment.updateScreen();
+    }
+    _mainBloc.updateBar(_currentTabIndex);
+  }
+
+  void _settingModalBottomSheet(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    title: new Text('Overall'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _changePeriod(Period.overall);
+                    }),
+                new ListTile(
+                  title: new Text('7 days'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _changePeriod(Period.day7);
+                  },
+                ),
+                new ListTile(
+                  title: new Text('1 month'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _changePeriod(Period.month1);
+                  },
+                ),
+                new ListTile(
+                  title: new Text('3 month'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _changePeriod(Period.month3);
+                  },
+                ),
+                new ListTile(
+                  title: new Text('6 month'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _changePeriod(Period.month6);
+                  },
+                ),
+                new ListTile(
+                  title: new Text('12 month'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _changePeriod(Period.month12);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

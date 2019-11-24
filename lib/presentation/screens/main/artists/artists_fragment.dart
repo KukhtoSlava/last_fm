@@ -11,10 +11,19 @@ import 'package:rxdart/rxdart.dart';
 class ArtistsFragment extends StatefulWidget {
   List<Artist> _artists = [];
 
-  bool _initial = true;
+  bool initial = true;
+
+  ArtistsFragmentState _artistsFragmentState;
+
+  updateScreen() {
+    _artistsFragmentState._refreshController.requestRefresh();
+  }
 
   @override
-  State<StatefulWidget> createState() => ArtistsFragmentState();
+  State<StatefulWidget> createState() {
+    _artistsFragmentState = ArtistsFragmentState();
+    return _artistsFragmentState;
+  }
 }
 
 class ArtistsFragmentState extends State<ArtistsFragment> {
@@ -34,19 +43,20 @@ class ArtistsFragmentState extends State<ArtistsFragment> {
     setState(() {
       widget._artists = artists;
       _refreshController.refreshCompleted();
-      widget._initial = false;
+      widget.initial = false;
     });
   }
 
   @override
   void initState() {
-    _refreshController = RefreshController(initialRefresh: widget._initial);
+    _refreshController = RefreshController(initialRefresh: widget.initial);
     super.initState();
   }
 
   @override
   void dispose() {
     _compositeSubscription.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -68,8 +78,9 @@ class ArtistsFragmentState extends State<ArtistsFragment> {
                 textAlign: TextAlign.end,
               );
               return Container(
+                alignment: AlignmentDirectional(1.0, 0.0),
                 margin: new EdgeInsets.only(right: 25.0),
-                height: 55.0,
+                height: 60.0,
                 child: body,
               );
             },
@@ -83,6 +94,13 @@ class ArtistsFragmentState extends State<ArtistsFragment> {
             itemCount: widget._artists.length,
             itemBuilder: (BuildContext context, int index) {
               Artist artist = widget._artists[index];
+              String url;
+              if (artist.image[3].text == "") {
+                url =
+                    "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+              } else {
+                url = artist.image[3].text;
+              }
               return Container(
                 padding: const EdgeInsets.all(4.0),
                 child: Stack(
@@ -93,8 +111,7 @@ class ArtistsFragmentState extends State<ArtistsFragment> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                    artist.image[3].text),
+                                image: CachedNetworkImageProvider(url),
                                 fit: BoxFit.cover))),
                     Container(
                         padding: const EdgeInsets.all(3.0),
