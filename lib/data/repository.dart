@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:last_fm/data/api_service.dart';
 import 'package:last_fm/data/models/response_auth.dart';
 import 'package:last_fm/data/models/response_recenttracks.dart';
+import 'package:last_fm/data/models/response_track.dart';
 import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/preferences.dart';
 import 'package:last_fm/data/system.dart';
@@ -137,5 +138,16 @@ class Repository {
         .map((response) => ResponseArtist.fromJson(
             json.decode(utf8.decode(response.bodyBytes))))
         .asBroadcastStream();
+  }
+
+  Observable<ResponseTrack> getOneTrack(String artist, String song) {
+    return Observable.fromFuture(_apiService.getTrack(artist, song))
+        .map((response) => ResponseTrack.fromJson(
+            json.decode(utf8.decode(response.bodyBytes))))
+        .asBroadcastStream();
+  }
+
+  Observable<String> parseHtml(String url) {
+    return Observable.fromFuture(_apiService.fetchHTML(url));
   }
 }

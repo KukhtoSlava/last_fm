@@ -1,6 +1,7 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:last_fm/data/models/response_oneartist.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/one_artist/one_artist_bloc.dart';

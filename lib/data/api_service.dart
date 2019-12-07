@@ -39,8 +39,19 @@ class ApiService {
           .Response> getAlbum(String artist, String album) async => _client.get(
       "https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=$API_KEY&artist=$artist&album=$album&format=json");
 
+  Future<http.Response> getArtist(String artist) async => _client.get(
+      "https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&api_key=$API_KEY&artist=$artist&format=json");
+
   Future<
       http
-          .Response> getArtist(String artist) async => _client.get(
-      "https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&api_key=$API_KEY&artist=$artist&format=json");
+          .Response> getTrack(String artist, String song) async => _client.get(
+      "https://ws.audioscrobbler.com/2.0/?method=track.getinfo&api_key=$API_KEY&artist=$artist&track=$song&format=json");
+
+  Future<String> fetchHTML(String url) async {
+    final response = await http.get(url);
+    if (response.statusCode == 200)
+      return response.body;
+    else
+      throw Exception('Failed');
+  }
 }

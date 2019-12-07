@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:last_fm/data/models/response_recenttracks.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_bloc.dart';
+import 'package:last_fm/presentation/screens/one_track/one_track_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -88,66 +89,85 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
             itemCount: widget._tracks.length,
             itemBuilder: (BuildContext context, int index) {
               Track track = widget._tracks[index];
+              String url;
+              if (track.image[3].text == "") {
+                url =
+                "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+              } else {
+                url = track.image[3].text;
+              }
               String date;
               if (track.date == null) {
                 date = "Scrobling now";
               } else {
                 date = track.date.text;
               }
-              return Card(
-                clipBehavior: Clip.antiAlias,
-                color: Colors.black38,
-                elevation: 5,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Container(
-                        height: 70,
-                        width: 70,
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                    track.image[3].text),
-                                fit: BoxFit.cover))),
-                    Flexible(
-                        child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+              return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TrackPage(
+                          artist: track.artist.text,
+                          song: track.name,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      color: Colors.black38,
+                      elevation: 5,
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            track.name,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 17),
-                          ),
-                          Text(
-                            track.artist.text,
-                            overflow: TextOverflow.ellipsis,
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.white70),
-                          ),
                           SizedBox(
-                            height: 10,
+                            width: 5,
                           ),
-                          Text(
-                            date,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 14, color: Colors.white),
-                          ),
+                          Container(
+                              height: 70,
+                              width: 70,
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: CachedNetworkImageProvider(
+                                          url),
+                                      fit: BoxFit.cover))),
+                          Flexible(
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  track.name,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 17),
+                                ),
+                                Text(
+                                  track.artist.text,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.white70),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  date,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ))
                         ],
-                      ),
-                    ))
-                  ],
-                ),
-              );
+                      )));
             },
           )),
     );

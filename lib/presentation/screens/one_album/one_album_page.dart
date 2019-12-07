@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:last_fm/data/models/response_onealbum.dart';
 import 'package:last_fm/data/models/response_topalbums.dart';
 import 'package:last_fm/data/repository.dart';
+import 'package:last_fm/presentation/screens/one_track/one_track_page.dart';
 
 import 'one_album_bloc.dart';
 
@@ -167,43 +168,58 @@ class AlbumPageState extends State {
                                   itemCount: tracks.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    return Card(
-                                      clipBehavior: Clip.antiAlias,
-                                      color: Colors.black38,
-                                      elevation: 5,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Flexible(
-                                              child: Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  "${index + 1} ${tracks[index].name}",
-                                                  overflow: TextOverflow.fade,
-                                                  maxLines: 1,
-                                                  softWrap: false,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize: 17),
-                                                ),
-                                              ],
+                                    return GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => TrackPage(
+                                                artist:
+                                                    tracks[index].artist.name,
+                                                song: tracks[index].name,
+                                              ),
                                             ),
-                                          ))
-                                        ],
-                                      ),
-                                    );
+                                          );
+                                        },
+                                        child: Card(
+                                          clipBehavior: Clip.antiAlias,
+                                          color: Colors.black38,
+                                          elevation: 5,
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Flexible(
+                                                  child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(12.0),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${index + 1} ${tracks[index].name}",
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      maxLines: 1,
+                                                      softWrap: false,
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 17),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ))
+                                            ],
+                                          ),
+                                        ));
                                   }))
                         ],
                       );
