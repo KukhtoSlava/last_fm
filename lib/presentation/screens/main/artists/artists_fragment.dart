@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:last_fm/data/models/response_topartists.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/artists/artists_bloc.dart';
+import 'package:last_fm/presentation/screens/one_artist/one_artist_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -105,46 +106,55 @@ class ArtistsFragmentState extends State<ArtistsFragment> {
               } else {
                 url = artist.image[3].text;
               }
-              return Container(
-                padding: const EdgeInsets.all(4.0),
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: <Widget>[
-                    Container(
-                        height: double.infinity,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: CachedNetworkImageProvider(url),
-                                fit: BoxFit.cover))),
-                    Container(
-                        padding: const EdgeInsets.all(3.0),
-                        color: Colors.black.withOpacity(0.5),
-                        height: 45,
-                        width: double.infinity,
-                        child: Column(children: [
-                          Text(
-                            "Scrobbles: ${artist.playcount}",
-                            maxLines: 1,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Regular'),
-                          ),
-                          Text(
-                            artist.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontFamily: 'Regular'),
-                          )
-                        ])),
-                  ],
-                ),
-              );
+              return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ArtistPage(artist: artist.name),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: CachedNetworkImageProvider(url),
+                                    fit: BoxFit.cover))),
+                        Container(
+                            padding: const EdgeInsets.all(3.0),
+                            color: Colors.black.withOpacity(0.5),
+                            height: 45,
+                            width: double.infinity,
+                            child: Column(children: [
+                              Text(
+                                "Scrobbles: ${artist.playcount}",
+                                maxLines: 1,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontFamily: 'Regular'),
+                              ),
+                              Text(
+                                artist.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontFamily: 'Regular'),
+                              )
+                            ])),
+                      ],
+                    ),
+                  ));
             },
           )),
     );

@@ -30,6 +30,9 @@ class AlbumPageState extends State {
 
   @override
   Widget build(BuildContext context) {
+    var image = _album.image[3].text != ""
+        ? _album.image[3].text
+        : "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -43,18 +46,35 @@ class AlbumPageState extends State {
                 height: 400,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: CachedNetworkImageProvider(_album.image[3].text),
+                        image: CachedNetworkImageProvider(image),
                         fit: BoxFit.cover)),
               ),
               StreamBuilder(
                   stream:
                       _oneAlbumBloc.getAlbum(_album.artist.name, _album.name),
                   builder: (context, snappShot) {
+                    if (snappShot != null &&
+                        snappShot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                          margin: EdgeInsets.only(top: 410.0),
+                          child: Center(child: CircularProgressIndicator()));
+                    }
                     if ((snappShot != null && !snappShot.hasData)) {
                       return Container();
-                    }
-                    else {
+                    } else {
                       ResponseAlbum response = snappShot.data as ResponseAlbum;
+                      var playcount = response.album != null
+                          ? response.album.playcount
+                          : "?";
+                      var listeners = response.album != null
+                          ? response.album.listeners
+                          : "?";
+                      var tags = response.album != null
+                          ? response.album.tags.tag
+                          : List<Tag>();
+                      var tracks = response.album != null
+                          ? response.album.tracks.track
+                          : List<Track>();
                       return Stack(
                         children: <Widget>[
                           Container(
@@ -73,7 +93,7 @@ class AlbumPageState extends State {
                                       ),
                                     ),
                                     Text(
-                                      response.album.playcount,
+                                      playcount,
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   ],
@@ -87,7 +107,7 @@ class AlbumPageState extends State {
                                           color: Colors.white70, fontSize: 20),
                                     ),
                                     Text(
-                                      response.album.listeners,
+                                      listeners,
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   ],
@@ -101,7 +121,7 @@ class AlbumPageState extends State {
                                   scrollDirection: Axis.horizontal,
                                   child: Stack(
                                     children: <Widget>[
-                                      SizedBox(height: 400.0),
+                                      SizedBox(height: 410.0),
                                       Container(
                                         padding: EdgeInsets.all(4.0),
                                         child: Column(
@@ -113,8 +133,7 @@ class AlbumPageState extends State {
                                                   WrapAlignment.center,
                                               alignment: WrapAlignment.center,
                                               spacing: 3.0,
-                                              children: buildTagsWidgets(
-                                                  response.album.tags.tag),
+                                              children: buildTagsWidgets(tags),
                                             )
                                           ],
                                         ),
@@ -145,7 +164,7 @@ class AlbumPageState extends State {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   padding: EdgeInsets.all(3),
-                                  itemCount: response.album.tracks.track.length,
+                                  itemCount: tracks.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return Card(
@@ -169,7 +188,7 @@ class AlbumPageState extends State {
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  "${index + 1} ${response.album.tracks.track[index].name}",
+                                                  "${index + 1} ${tracks[index].name}",
                                                   overflow: TextOverflow.fade,
                                                   maxLines: 1,
                                                   softWrap: false,

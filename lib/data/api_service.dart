@@ -38,4 +38,9 @@ class ApiService {
       http
           .Response> getAlbum(String artist, String album) async => _client.get(
       "https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=$API_KEY&artist=$artist&album=$album&format=json");
+
+  Future<
+      http
+          .Response> getArtist(String artist) async => _client.get(
+      "https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&api_key=$API_KEY&artist=$artist&format=json");
 }
