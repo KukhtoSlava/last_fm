@@ -11,6 +11,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../constants.dart';
 import 'enums/enums.dart';
+import 'models/response_onealbum.dart';
 import 'models/response_topalbums.dart';
 import 'models/response_topartists.dart';
 import 'models/response_toptracks.dart';
@@ -119,7 +120,14 @@ class Repository {
     return Observable.fromFuture(_preferences.setPeriod(period));
   }
 
-  Observable<Period> getPeriod(){
+  Observable<Period> getPeriod() {
     return Observable.just(_preferences.getPeriod());
+  }
+
+  Observable<ResponseAlbum> getOneAlbum(String artist, String album) {
+    return Observable.fromFuture(_apiService.getAlbum(artist, album))
+        .map((response) => ResponseAlbum.fromJson(
+            json.decode(utf8.decode(response.bodyBytes))))
+        .asBroadcastStream();
   }
 }

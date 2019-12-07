@@ -79,11 +79,16 @@ class TracksFragmentState extends State<TracksFragment> {
                 style: TextStyle(fontSize: 18, color: Colors.white70),
                 textAlign: TextAlign.end,
               );
-              return Container(
-                margin: new EdgeInsets.only(right: 25.0),
-                height: 60.0,
-                child: body,
-              );
+              if (mode == LoadStatus.idle) {
+                return Container();
+              } else {
+                return Container(
+                  alignment: AlignmentDirectional(1.0, 0.0),
+                  margin: new EdgeInsets.only(right: 25.0),
+                  height: 60.0,
+                  child: body,
+                );
+              }
             },
           ),
           controller: _refreshController,

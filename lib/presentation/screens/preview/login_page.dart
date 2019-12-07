@@ -223,8 +223,8 @@ class _LoginPageState extends State<LoginPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 32),
             child: StreamBuilder<StatusLoading>(
-                stream: _loginBloc.getStatus(),
-                builder: (context, snappShot) {
+    stream: _loginBloc.getStatus(),
+    builder: (context, snappShot) {
                   if ((snappShot != null && !snappShot.hasData) ||
                       snappShot.data == StatusLoading.none) {
                     return Container(

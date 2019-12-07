@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:last_fm/data/models/response_topalbums.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/albums/albums_bloc.dart';
+import 'package:last_fm/presentation/screens/one_album/one_album_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -76,12 +77,16 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
                 "See more...",
                 style: TextStyle(fontSize: 18, color: Colors.white70),
               );
-              return Container(
-                alignment: AlignmentDirectional(1.0, 0.0),
-                margin: new EdgeInsets.only(right: 25.0),
-                height: 60.0,
-                child: body,
-              );
+              if (mode == LoadStatus.idle) {
+                return Container();
+              } else {
+                return Container(
+                  alignment: AlignmentDirectional(1.0, 0.0),
+                  margin: new EdgeInsets.only(right: 25.0),
+                  height: 60.0,
+                  child: body,
+                );
+              }
             },
           ),
           controller: _refreshController,
@@ -100,46 +105,55 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
               } else {
                 url = album.image[3].text;
               }
-              return Container(
-                padding: const EdgeInsets.all(4.0),
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: <Widget>[
-                    Container(
-                        height: double.infinity,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: CachedNetworkImageProvider(url),
-                                fit: BoxFit.cover))),
-                    Container(
-                        padding: const EdgeInsets.all(3.0),
-                        color: Colors.black.withOpacity(0.5),
-                        height: 45,
-                        width: double.infinity,
-                        child: Column(children: [
-                          Text(
-                            "Scrobbles: ${album.playcount}",
-                            maxLines: 1,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Regular'),
-                          ),
-                          Text(
-                            album.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontFamily: 'Regular'),
-                          )
-                        ])),
-                  ],
-                ),
-              );
+              return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AlbumPage(album: album),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: CachedNetworkImageProvider(url),
+                                    fit: BoxFit.cover))),
+                        Container(
+                            padding: const EdgeInsets.all(3.0),
+                            color: Colors.black.withOpacity(0.5),
+                            height: 45,
+                            width: double.infinity,
+                            child: Column(children: [
+                              Text(
+                                "Scrobbles: ${album.playcount}",
+                                maxLines: 1,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontFamily: 'Regular'),
+                              ),
+                              Text(
+                                album.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontFamily: 'Regular'),
+                              )
+                            ])),
+                      ],
+                    ),
+                  ));
             },
           )),
     );

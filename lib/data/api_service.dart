@@ -33,4 +33,9 @@ class ApiService {
   Future<http.Response> getUserTracks(String userName, String period) async =>
       _client.get(
           "https://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&user=$userName&api_key=$API_KEY&format=json&period=$period");
+
+  Future<
+      http
+          .Response> getAlbum(String artist, String album) async => _client.get(
+      "https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=$API_KEY&artist=$artist&album=$album&format=json");
 }
