@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:last_fm/data/repository.dart';
@@ -223,8 +224,8 @@ class _LoginPageState extends State<LoginPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 32),
             child: StreamBuilder<StatusLoading>(
-    stream: _loginBloc.getStatus(),
-    builder: (context, snappShot) {
+                stream: _loginBloc.getStatus(),
+                builder: (context, snappShot) {
                   if ((snappShot != null && !snappShot.hasData) ||
                       snappShot.data == StatusLoading.none) {
                     return Container(
@@ -254,9 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation(Colors.red),
-                              ),
+                              _platformProgressIndicator(),
                               FlatButton(
                                   child: Text(
                                     "Login",
@@ -315,6 +314,16 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Widget _platformProgressIndicator() {
+    if (Platform.isAndroid) {
+      return CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation(Colors.red),
+      );
+    } else {
+      return CupertinoActivityIndicator();
+    }
   }
 
   _openMain() {

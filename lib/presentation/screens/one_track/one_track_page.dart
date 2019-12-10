@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -60,7 +63,7 @@ class TrackPageState extends State {
                     ),
                     Container(
                         margin: EdgeInsets.only(top: 410.0, bottom: 20),
-                        child: Center(child: CircularProgressIndicator()))
+                        child: Center(child: _platformProgressIndicator()))
                   ],
                 );
               }
@@ -135,7 +138,7 @@ class TrackPageState extends State {
                                   padding: EdgeInsets.all(4.0),
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Wrap(
                                         runAlignment: WrapAlignment.center,
@@ -157,7 +160,7 @@ class TrackPageState extends State {
                             Text(
                               _artist,
                               style:
-                              TextStyle(color: Colors.white, fontSize: 30),
+                                  TextStyle(color: Colors.white, fontSize: 30),
                             ),
                             Divider(
                               color: Colors.black,
@@ -181,7 +184,7 @@ class TrackPageState extends State {
                     ),
                     StreamBuilder(
                         stream:
-                        _oneTrackBloc.checkYouTubeLink(response.track.url),
+                            _oneTrackBloc.checkYouTubeLink(response.track.url),
                         builder: (context, snappShot) {
                           if ((snappShot != null && !snappShot.hasData)) {
                             return Container();
@@ -240,5 +243,13 @@ class TrackPageState extends State {
       list.add(widget);
     }
     return list;
+  }
+
+  Widget _platformProgressIndicator() {
+    if (Platform.isAndroid) {
+      return CircularProgressIndicator();
+    } else {
+      return CupertinoActivityIndicator();
+    }
   }
 }

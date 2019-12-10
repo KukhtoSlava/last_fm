@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -59,6 +62,16 @@ class _MainPageState extends State<MainPage>
     super.dispose();
   }
 
+  _checkCupertinoTabs(int index) {
+    if (index == 1 && _artistsFragment.initial == true) {
+      _artistsFragment.updateScreen();
+    } else if (index == 2 && _albumsFragment.initial == true) {
+      _albumsFragment.updateScreen();
+    } else if (index == 3 && _tracksFragment.initial == true) {
+      _tracksFragment.updateScreen();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -112,50 +125,96 @@ class _MainPageState extends State<MainPage>
   }
 
   Widget _buildBody() {
-    return Scaffold(
-      body: DefaultTabController(
-        length: 4,
-        child: new Scaffold(
-          body: TabBarView(
-            controller: _controller,
-            children: [
-              _scrobblesFragment,
-              _artistsFragment,
-              _albumsFragment,
-              _tracksFragment,
-            ],
+    if (Platform.isAndroid) {
+      return Scaffold(
+        body: DefaultTabController(
+          length: 4,
+          child: new Scaffold(
+            body: TabBarView(
+              controller: _controller,
+              children: [
+                _scrobblesFragment,
+                _artistsFragment,
+                _albumsFragment,
+                _tracksFragment,
+              ],
+            ),
+            bottomNavigationBar: new TabBar(
+              controller: _controller,
+              onTap: (index) {
+                _currentTabIndex = index;
+                _mainBloc.updateBar(_currentTabIndex);
+              },
+              tabs: [
+                Tab(
+                  icon: Icon(Icons.format_list_bulleted),
+                  text: "Scrobbles",
+                ),
+                Tab(
+                  icon: Icon(Icons.star),
+                  text: "Artists",
+                ),
+                Tab(
+                  icon: Icon(CustomIcons.album),
+                  text: "Albums",
+                ),
+                Tab(
+                  icon: Icon(CustomIcons.note_beamed),
+                  text: "Tracks",
+                )
+              ],
+              labelColor: Colors.red,
+              unselectedLabelColor: Colors.grey,
+            ),
+            backgroundColor: Colors.black,
           ),
-          bottomNavigationBar: new TabBar(
-            controller: _controller,
-            onTap: (index) {
-              _currentTabIndex = index;
-              _mainBloc.updateBar(_currentTabIndex);
-            },
-            tabs: [
-              Tab(
-                icon: new Icon(Icons.format_list_bulleted),
-                text: "Scrobbles",
-              ),
-              Tab(
-                icon: new Icon(Icons.star),
-                text: "Artists",
-              ),
-              Tab(
-                icon: new Icon(CustomIcons.album),
-                text: "Albums",
-              ),
-              Tab(
-                icon: new Icon(CustomIcons.note_beamed),
-                text: "Tracks",
-              )
-            ],
-            labelColor: Colors.red,
-            unselectedLabelColor: Colors.grey,
-          ),
-          backgroundColor: Colors.black,
         ),
-      ),
-    );
+      );
+    } else {
+      return CupertinoTabScaffold(
+        backgroundColor: Colors.black87,
+        tabBar: CupertinoTabBar(
+          backgroundColor: Colors.black,
+          onTap: (index) {
+            _currentTabIndex = index;
+            _mainBloc.updateBar(_currentTabIndex);
+            _checkCupertinoTabs(index);
+          },
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.format_list_bulleted),
+              title: Text('Scrobbles'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.star),
+              title: Text('Artists'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(CustomIcons.album),
+              title: Text('Albums'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(CustomIcons.note_beamed),
+              title: Text('Tracks'),
+            ),
+          ],
+        ),
+        tabBuilder: (BuildContext context, int index) {
+          assert(index >= 0 && index <= 3);
+          switch (index) {
+            case 0:
+              return _scrobblesFragment;
+            case 1:
+              return _artistsFragment;
+            case 2:
+              return _albumsFragment;
+            case 3:
+              return _tracksFragment;
+          }
+          return null;
+        },
+      );
+    }
   }
 
   Widget _buildDrawer() {
@@ -253,56 +312,114 @@ class _MainPageState extends State<MainPage>
   }
 
   void _settingModalBottomSheet(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            child: new Wrap(
-              children: <Widget>[
-                new ListTile(
-                    title: new Text('Overall'),
+    if (Platform.isAndroid) {
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc) {
+            return Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      title: new Text('Overall'),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _changePeriod(Period.overall);
+                      }),
+                  new ListTile(
+                    title: new Text('7 days'),
                     onTap: () {
                       Navigator.of(context).pop();
-                      _changePeriod(Period.overall);
-                    }),
-                new ListTile(
-                  title: new Text('7 days'),
-                  onTap: () {
+                      _changePeriod(Period.day7);
+                    },
+                  ),
+                  new ListTile(
+                    title: new Text('1 month'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _changePeriod(Period.month1);
+                    },
+                  ),
+                  new ListTile(
+                    title: new Text('3 month'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _changePeriod(Period.month3);
+                    },
+                  ),
+                  new ListTile(
+                    title: new Text('6 month'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _changePeriod(Period.month6);
+                    },
+                  ),
+                  new ListTile(
+                    title: new Text('12 month'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _changePeriod(Period.month12);
+                    },
+                  ),
+                ],
+              ),
+            );
+          });
+    } else {
+      showCupertinoModalPopup(
+          context: context,
+          builder: (context) {
+            return CupertinoActionSheet(
+              cancelButton: CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cancel")),
+              actions: <Widget>[
+                CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _changePeriod(Period.overall);
+                  },
+                  child: Text("Overall"),
+                ),
+                CupertinoActionSheetAction(
+                  onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.day7);
                   },
+                  child: Text("7 days"),
                 ),
-                new ListTile(
-                  title: new Text('1 month'),
-                  onTap: () {
+                CupertinoActionSheetAction(
+                  onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month1);
                   },
+                  child: Text("1 month"),
                 ),
-                new ListTile(
-                  title: new Text('3 month'),
-                  onTap: () {
+                CupertinoActionSheetAction(
+                  onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month3);
                   },
+                  child: Text("3 month"),
                 ),
-                new ListTile(
-                  title: new Text('6 month'),
-                  onTap: () {
+                CupertinoActionSheetAction(
+                  onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month6);
                   },
+                  child: Text("6 month"),
                 ),
-                new ListTile(
-                  title: new Text('12 month'),
-                  onTap: () {
+                CupertinoActionSheetAction(
+                  onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month12);
                   },
-                ),
+                  child: Text("12 month"),
+                )
               ],
-            ),
-          );
-        });
+            );
+          });
+    }
   }
 }

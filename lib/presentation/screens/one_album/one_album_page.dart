@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,7 +60,7 @@ class AlbumPageState extends State {
                         snappShot.connectionState == ConnectionState.waiting) {
                       return Container(
                           margin: EdgeInsets.only(top: 410.0, bottom: 20),
-                          child: Center(child: CircularProgressIndicator()));
+                          child: Center(child: _platformProgressIndicator()));
                     }
                     if ((snappShot != null && !snappShot.hasData)) {
                       return Container();
@@ -239,5 +241,13 @@ class AlbumPageState extends State {
       list.add(widget);
     }
     return list;
+  }
+
+  Widget _platformProgressIndicator() {
+    if (Platform.isAndroid) {
+      return CircularProgressIndicator();
+    } else {
+      return CupertinoActivityIndicator();
+    }
   }
 }
