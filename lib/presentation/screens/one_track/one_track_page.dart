@@ -59,7 +59,7 @@ class TrackPageState extends State {
                               fit: BoxFit.cover)),
                     ),
                     Container(
-                        margin: EdgeInsets.only(top: 410.0),
+                        margin: EdgeInsets.only(top: 410.0, bottom: 20),
                         child: Center(child: CircularProgressIndicator()))
                   ],
                 );

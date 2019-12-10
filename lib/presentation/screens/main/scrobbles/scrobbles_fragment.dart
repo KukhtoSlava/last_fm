@@ -2,12 +2,16 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:last_fm/data/enums/enums.dart';
 import 'package:last_fm/data/models/response_recenttracks.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_bloc.dart';
 import 'package:last_fm/presentation/screens/one_track/one_track_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tuple/tuple.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScrobblesFragment extends StatefulWidget {
   List<Track> _tracks = [];
@@ -53,6 +57,52 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
     super.dispose();
   }
 
+  _advancedClicked() {
+    _compositeSubscription.add(
+        _scrobblesBloc.getAdvantage().listen((data) => _openMoreUrl(data)));
+  }
+
+  _openMoreUrl(Tuple2<String, Period> pair) async {
+    String name = pair.item1;
+    String period = _mapPeriod(pair.item2);
+    String url = 'https://www.last.fm/user/$name/library?date_preset=$period';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      _showToast("Could not launch $url");
+    }
+  }
+
+  String _mapPeriod(Period period) {
+    if (period == Period.day7) {
+      return "LAST_7_DAYS";
+    }
+    if (period == Period.month1) {
+      return "LAST_30_DAYS";
+    }
+    if (period == Period.month3) {
+      return "LAST_90_DAYS";
+    }
+    if (period == Period.month6) {
+      return "LAST_180_DAYS";
+    }
+    if (period == Period.month12) {
+      return "LAST_365_DAYS";
+    }
+    return "ALL";
+  }
+
+  _showToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,11 +115,15 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
             loadStyle: LoadStyle.ShowAlways,
             builder: (BuildContext context, LoadStatus mode) {
               Widget body;
-              body = Text(
-                "See more...",
-                style: TextStyle(fontSize: 18, color: Colors.white70),
-                textAlign: TextAlign.end,
-              );
+              body = GestureDetector(
+                  onTap: () {
+                    _advancedClicked();
+                  },
+                  child: Text(
+                    "See more...",
+                    style: TextStyle(fontSize: 18, color: Colors.white70),
+                    textAlign: TextAlign.end,
+                  ));
               if (mode == LoadStatus.idle) {
                 return Container();
               } else {
@@ -92,7 +146,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
               String url;
               if (track.image[3].text == "") {
                 url =
-                "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+                    "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
               } else {
                 url = track.image[3].text;
               }
@@ -130,8 +184,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
                                   image: DecorationImage(
-                                      image: CachedNetworkImageProvider(
-                                          url),
+                                      image: CachedNetworkImageProvider(url),
                                       fit: BoxFit.cover))),
                           Flexible(
                               child: Padding(

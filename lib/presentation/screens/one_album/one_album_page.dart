@@ -57,7 +57,7 @@ class AlbumPageState extends State {
                     if (snappShot != null &&
                         snappShot.connectionState == ConnectionState.waiting) {
                       return Container(
-                          margin: EdgeInsets.only(top: 410.0),
+                          margin: EdgeInsets.only(top: 410.0, bottom: 20),
                           child: Center(child: CircularProgressIndicator()));
                     }
                     if ((snappShot != null && !snappShot.hasData)) {
