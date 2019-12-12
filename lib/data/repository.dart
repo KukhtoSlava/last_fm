@@ -150,4 +150,12 @@ class Repository {
   Observable<String> parseHtml(String url) {
     return Observable.fromFuture(_apiService.fetchHTML(url));
   }
+
+  Observable<String> getAdvantageUrl(TypeQuery typeQuery) {
+    return Observable.zip2(
+        Observable.just(_preferences.getUserName()),
+        Observable.just(_preferences.getPeriod()),
+        (userName, period) =>
+            "https://www.last.fm/user/$userName/library${TypeQueryHelper.getValue(typeQuery)}?date_preset=${PeriodHelper.getPeriodQueryValue(period)}");
+  }
 }

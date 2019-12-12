@@ -2,16 +2,13 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:last_fm/data/enums/enums.dart';
 import 'package:last_fm/data/models/response_recenttracks.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_bloc.dart';
 import 'package:last_fm/presentation/screens/one_track/one_track_page.dart';
+import 'package:last_fm/presentation/widgets/ui_helper.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tuple/tuple.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ScrobblesFragment extends StatefulWidget {
   List<Track> _tracks = [];
@@ -27,6 +24,8 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
 
   RefreshController _refreshController;
 
+  UICommonComponent _uiCommonComponent =
+      BlocProvider.getBloc<UICommonComponent>();
   ScrobblesBloc _scrobblesBloc =
       ScrobblesBloc(BlocProvider.getBloc<Repository>());
 
@@ -57,50 +56,10 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
     super.dispose();
   }
 
-  _advancedClicked() {
-    _compositeSubscription.add(
-        _scrobblesBloc.getAdvantage().listen((data) => _openMoreUrl(data)));
-  }
-
-  _openMoreUrl(Tuple2<String, Period> pair) async {
-    String name = pair.item1;
-    String period = _mapPeriod(pair.item2);
-    String url = 'https://www.last.fm/user/$name/library?date_preset=$period';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      _showToast("Could not launch $url");
-    }
-  }
-
-  String _mapPeriod(Period period) {
-    if (period == Period.day7) {
-      return "LAST_7_DAYS";
-    }
-    if (period == Period.month1) {
-      return "LAST_30_DAYS";
-    }
-    if (period == Period.month3) {
-      return "LAST_90_DAYS";
-    }
-    if (period == Period.month6) {
-      return "LAST_180_DAYS";
-    }
-    if (period == Period.month12) {
-      return "LAST_365_DAYS";
-    }
-    return "ALL";
-  }
-
-  _showToast(String message) {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
+  _advancedClicked(BuildContext context) {
+    _compositeSubscription.add(_scrobblesBloc
+        .getAdvantageUrl()
+        .listen((url) => _uiCommonComponent.openUrl(url, context)));
   }
 
   @override
@@ -117,7 +76,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
               Widget body;
               body = GestureDetector(
                   onTap: () {
-                    _advancedClicked();
+                    _advancedClicked(context);
                   },
                   child: Text(
                     "See more...",

@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/exceptions/exceptions.dart';
 import 'package:last_fm/presentation/screens/main/main_page.dart';
 import 'package:last_fm/presentation/screens/preview/login_bloc.dart';
+import 'package:last_fm/presentation/widgets/ui_helper.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -18,6 +17,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   CompositeSubscription _compositeSubscription = CompositeSubscription();
+
+  UICommonComponent _uiCommonComponent =
+      BlocProvider.getBloc<UICommonComponent>();
   LoginBloc _loginBloc = LoginBloc(BlocProvider.getBloc<Repository>());
   TextEditingController _textEditingControllerName = TextEditingController();
   TextEditingController _textEditingControllerPassword =
@@ -331,17 +333,6 @@ class _LoginPageState extends State<LoginPage> {
         context, MaterialPageRoute(builder: (context) => MainPage()));
   }
 
-  _showToast(String message) {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-
   _hideKeyboard() {
     FocusScope.of(context).requestFocus(FocusNode());
   }
@@ -349,7 +340,7 @@ class _LoginPageState extends State<LoginPage> {
   _loginClicked() {
     _hideKeyboard();
     if (_name == "" || _password == "") {
-      _showToast("Empty Fields!");
+      _uiCommonComponent.showErrorMessage("Empty Fields!", context);
       return;
     }
     _compositeSubscription.add(_loginBloc
@@ -368,25 +359,17 @@ class _LoginPageState extends State<LoginPage> {
     }
     _textEditingControllerName.text = _name;
     _textEditingControllerPassword.text = _password;
-    _showToast(errorMessage);
+    _uiCommonComponent.showErrorMessage(errorMessage, context);
   }
 
   _forgotPasswordURL() async {
     const url = 'https://www.last.fm/settings/lostpassword';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      _showToast("Could not launch $url");
-    }
+    _uiCommonComponent.openUrl(url, context);
   }
 
   _signUpURL() async {
     const url = 'https://www.last.fm/join?next=/settings';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      _showToast("Could not launch $url");
-    }
+    _uiCommonComponent.openUrl(url, context);
   }
 }
 

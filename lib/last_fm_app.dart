@@ -6,6 +6,7 @@ import 'package:last_fm/data/preferences.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/data/system.dart';
 import 'package:last_fm/presentation/screens/splash/splash_page.dart';
+import 'package:last_fm/presentation/widgets/ui_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(Initial());
@@ -14,12 +15,13 @@ class Initial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      child: MaterialApp(
-          home: SplashPage()
-      ),
+      child: MaterialApp(home: SplashPage()),
       blocs: [
-        Bloc((i) => Repository(i.get<ApiService>(), i.get<Preferences>(), i.get<System>()),
+        Bloc(
+            (i) => Repository(
+                i.get<ApiService>(), i.get<Preferences>(), i.get<System>()),
             singleton: true),
+        Bloc((i) => UICommonComponent(), singleton: true)
       ],
       dependencies: [
         Dependency((i) => ApiService(http.Client()), singleton: true),
