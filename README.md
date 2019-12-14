@@ -12,7 +12,7 @@ Libraries Used in the Project:
 - [RxDart](https://pub.dev/packages/rxdart)
 - [Cached network image](https://pub.dev/packages/cached_network_image)
 - [Http flutter](https://pub.dev/packages/http)
-- [Bloc Pattern](https://pub.dev/packages/http)
+- [Bloc Pattern](https://pub.dev/packages/bloc_pattern)
 - [Shared preferences](https://pub.dev/packages/shared_preferences)
 - [Flutter toast](https://pub.dev/packages/fluttertoast)
 - [Url launcher](https://pub.dev/packages/url_launcher)
