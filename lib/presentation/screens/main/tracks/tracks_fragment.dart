@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/models/response_toptracks.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/tracks/tracks_bloc.dart';
@@ -89,7 +90,7 @@ class TracksFragmentState extends State<TracksFragment> {
                     _advancedClicked(context);
                   },
                   child: Text(
-                    "See more...",
+                    SEE_MORE,
                     style: TextStyle(fontSize: 18, color: Colors.white70),
                     textAlign: TextAlign.end,
                   ));
@@ -172,7 +173,7 @@ class TracksFragmentState extends State<TracksFragment> {
                                 height: 10,
                               ),
                               Text(
-                                "scrobbles: ${track.playcount}",
+                                "$SCROBBLES${track.playcount}",
                                 overflow: TextOverflow.fade,
                                 maxLines: 1,
                                 softWrap: false,

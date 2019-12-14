@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/models/response_oneartist.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/one_artist/one_artist_bloc.dart';
@@ -32,8 +33,7 @@ class ArtistPageState extends State {
 
   @override
   Widget build(BuildContext context) {
-    var image =
-        "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+    var image = EMPTY_PICTURE;
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -75,7 +75,7 @@ class ArtistPageState extends State {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      "Scrobbles:",
+                                      SCROBBLES,
                                       style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 20,
@@ -91,7 +91,7 @@ class ArtistPageState extends State {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      "Listeners:",
+                                      LISTENERS,
                                       style: TextStyle(
                                           color: Colors.white70, fontSize: 20),
                                     ),
@@ -136,7 +136,7 @@ class ArtistPageState extends State {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
-                                    "History",
+                                    HISTORY,
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 30),
                                   ),

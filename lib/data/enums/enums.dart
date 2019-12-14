@@ -52,6 +52,23 @@ class PeriodHelper {
     }
   }
 
+  static String getReadableValue(Period period) {
+    switch (period) {
+      case Period.overall:
+        return "Overall";
+      case Period.day7:
+        return "7 Days";
+      case Period.month1:
+        return "1 Month";
+      case Period.month3:
+        return "3 Months";
+      case Period.month6:
+        return "6 Months";
+      case Period.month12:
+        return "12 Months";
+    }
+  }
+
   static Period getPeriod(String value) {
     switch (value) {
       case "Overall":

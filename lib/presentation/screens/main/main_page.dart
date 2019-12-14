@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/enums/enums.dart';
 import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/repository.dart';
@@ -39,7 +40,7 @@ class _MainPageState extends State<MainPage>
   MainBloc _mainBloc = MainBloc(BlocProvider.getBloc<Repository>());
 
   String _convertTime(int timestamp) {
-    var format = new DateFormat('dd.MM.yyyy');
+    var format = new DateFormat(DATE_FORMAT);
     var date = new DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     return format.format(date);
   }
@@ -84,14 +85,14 @@ class _MainPageState extends State<MainPage>
                   builder: (context, snappShot) {
                     if ((snappShot != null && !snappShot.hasData)) {
                       return Text(
-                        "Scrobbles",
+                        SCROBBLES_NAMING,
                         style: new TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
                             fontSize: 22.0),
                       );
                     }
-                    if (snappShot.data == "Scrobbles") {
+                    if (snappShot.data == SCROBBLES_NAMING) {
                       return Text(
                         snappShot.data,
                         style: new TextStyle(
@@ -148,19 +149,19 @@ class _MainPageState extends State<MainPage>
               tabs: [
                 Tab(
                   icon: Icon(Icons.format_list_bulleted),
-                  text: "Scrobbles",
+                  text: SCROBBLES_TAB,
                 ),
                 Tab(
                   icon: Icon(Icons.star),
-                  text: "Artists",
+                  text: ARTISTS_TAB,
                 ),
                 Tab(
                   icon: Icon(CustomIcons.album),
-                  text: "Albums",
+                  text: ALBUMS_TAB,
                 ),
                 Tab(
                   icon: Icon(CustomIcons.note_beamed),
-                  text: "Tracks",
+                  text: TRACKS_TAB,
                 )
               ],
               labelColor: Colors.red,
@@ -183,19 +184,19 @@ class _MainPageState extends State<MainPage>
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.format_list_bulleted),
-              title: Text('Scrobbles'),
+              title: Text(SCROBBLES_TAB),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.star),
-              title: Text('Artists'),
+              title: Text(ARTISTS_TAB),
             ),
             BottomNavigationBarItem(
               icon: Icon(CustomIcons.album),
-              title: Text('Albums'),
+              title: Text(ALBUMS_TAB),
             ),
             BottomNavigationBarItem(
               icon: Icon(CustomIcons.note_beamed),
-              title: Text('Tracks'),
+              title: Text(TRACKS_TAB),
             ),
           ],
         ),
@@ -222,8 +223,7 @@ class _MainPageState extends State<MainPage>
     return StreamBuilder<ResponseUser>(
       stream: _mainBloc.getUserInfo(),
       builder: (context, snappShot) {
-        String url =
-            "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+        String url = EMPTY_PICTURE;
         String name = "";
         String scrobbles = "";
         String date = "";
@@ -259,22 +259,22 @@ class _MainPageState extends State<MainPage>
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                 ),
                 SizedBox(height: 10.0),
-                Text("Scrobbles: $scrobbles"),
+                Text("$SCROBBLES$scrobbles"),
                 SizedBox(height: 10.0),
                 Divider(),
                 ListTile(
-                  title: Text("Country: $country"),
+                  title: Text("$COUNTRY$country"),
                   leading: Icon(Icons.location_city),
                 ),
                 ListTile(
-                  title: Text("Registrated date: $date"),
+                  title: Text("$REGISTRATION_DATE$date"),
                   leading: Icon(Icons.date_range),
                 ),
                 ListTile(
                   onTap: () {
                     _logOutClicked();
                   },
-                  title: Text("Log out"),
+                  title: Text(LOG_OUT),
                   leading: Icon(Icons.exit_to_app),
                 )
               ],
@@ -320,41 +320,41 @@ class _MainPageState extends State<MainPage>
               child: new Wrap(
                 children: <Widget>[
                   new ListTile(
-                      title: new Text('Overall'),
+                      title: new Text(OVERALL),
                       onTap: () {
                         Navigator.of(context).pop();
                         _changePeriod(Period.overall);
                       }),
                   new ListTile(
-                    title: new Text('7 days'),
+                    title: new Text(DAY7),
                     onTap: () {
                       Navigator.of(context).pop();
                       _changePeriod(Period.day7);
                     },
                   ),
                   new ListTile(
-                    title: new Text('1 month'),
+                    title: new Text(MONTH1),
                     onTap: () {
                       Navigator.of(context).pop();
                       _changePeriod(Period.month1);
                     },
                   ),
                   new ListTile(
-                    title: new Text('3 month'),
+                    title: new Text(MONTH3),
                     onTap: () {
                       Navigator.of(context).pop();
                       _changePeriod(Period.month3);
                     },
                   ),
                   new ListTile(
-                    title: new Text('6 month'),
+                    title: new Text(MONTH6),
                     onTap: () {
                       Navigator.of(context).pop();
                       _changePeriod(Period.month6);
                     },
                   ),
                   new ListTile(
-                    title: new Text('12 month'),
+                    title: new Text(MONTH12),
                     onTap: () {
                       Navigator.of(context).pop();
                       _changePeriod(Period.month12);
@@ -373,49 +373,49 @@ class _MainPageState extends State<MainPage>
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("Cancel")),
+                  child: Text(CANCEL)),
               actions: <Widget>[
                 CupertinoActionSheetAction(
                   onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.overall);
                   },
-                  child: Text("Overall"),
+                  child: Text(OVERALL),
                 ),
                 CupertinoActionSheetAction(
                   onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.day7);
                   },
-                  child: Text("7 days"),
+                  child: Text(DAY7),
                 ),
                 CupertinoActionSheetAction(
                   onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month1);
                   },
-                  child: Text("1 month"),
+                  child: Text(MONTH1),
                 ),
                 CupertinoActionSheetAction(
                   onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month3);
                   },
-                  child: Text("3 month"),
+                  child: Text(MONTH3),
                 ),
                 CupertinoActionSheetAction(
                   onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month6);
                   },
-                  child: Text("6 month"),
+                  child: Text(MONTH6),
                 ),
                 CupertinoActionSheetAction(
                   onPressed: () {
                     Navigator.of(context).pop();
                     _changePeriod(Period.month12);
                   },
-                  child: Text("12 month"),
+                  child: Text(MONTH12),
                 )
               ],
             );

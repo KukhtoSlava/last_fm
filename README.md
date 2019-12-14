@@ -1,16 +1,23 @@
 # last_fm
 
-Clien for last Fm resource
+Clien for Last.Fm resources.
 
-## Getting Started
+## Sample of application on flutter for Android and IOS platforms.
 
-This project is a starting point for a Flutter application.
+To be able to assemble a project, you need to register as a developer on the Last.fm portal and fill in the keys API_KEY and SECRET in file constants.dart
+[Last.fm](https://www.last.fm/api/?lang=eng&)
 
-A few resources to get you started if this is your first Flutter project:
+Libraries Used in the Project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- [RxDart](https://pub.dev/packages/rxdart)
+- [Cached network image](https://pub.dev/packages/cached_network_image)
+- [Http flutter](https://pub.dev/packages/http)
+- [Bloc Pattern](https://pub.dev/packages/http)
+- [Shared preferences](https://pub.dev/packages/shared_preferences)
+- [Flutter toast](https://pub.dev/packages/fluttertoast)
+- [Url launcher](https://pub.dev/packages/url_launcher)
+- [Intl](https://pub.dev/packages/intl)
+- [Pull to refresh](https://pub.dev/packages/pull_to_refresh)
+- [Html flutter](https://pub.dev/packages/html)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+

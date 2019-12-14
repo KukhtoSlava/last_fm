@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/models/response_topalbums.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/albums/albums_bloc.dart';
@@ -87,7 +88,7 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
                     _advancedClicked(context);
                   },
                   child: Text(
-                    "See more...",
+                    SEE_MORE,
                     style: TextStyle(fontSize: 18, color: Colors.white70),
                     textAlign: TextAlign.end,
                   ));
@@ -114,8 +115,7 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
               Album album = widget._albums[index];
               String url;
               if (album.image[3].text == "") {
-                url =
-                    "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+                url = EMPTY_PICTURE;
               } else {
                 url = album.image[3].text;
               }
@@ -147,7 +147,7 @@ class AlbumsFragmentState extends State<AlbumsFragment> {
                             width: double.infinity,
                             child: Column(children: [
                               Text(
-                                "Scrobbles: ${album.playcount}",
+                                "$SCROBBLES${album.playcount}",
                                 maxLines: 1,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(

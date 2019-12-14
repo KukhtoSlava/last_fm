@@ -4,6 +4,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/models/response_onealbum.dart';
 import 'package:last_fm/data/models/response_topalbums.dart';
 import 'package:last_fm/data/repository.dart';
@@ -35,7 +36,7 @@ class AlbumPageState extends State {
   Widget build(BuildContext context) {
     var image = _album.image[3].text != ""
         ? _album.image[3].text
-        : "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+        : EMPTY_PICTURE;
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -89,7 +90,7 @@ class AlbumPageState extends State {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      "Scrobbles:",
+                                      SCROBBLES,
                                       style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 20,
@@ -105,7 +106,7 @@ class AlbumPageState extends State {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      "Listeners:",
+                                      LISTENERS,
                                       style: TextStyle(
                                           color: Colors.white70, fontSize: 20),
                                     ),
@@ -149,7 +150,7 @@ class AlbumPageState extends State {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
-                                    "Tracklist",
+                                    TRACKLIST,
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 30),
                                   ),

@@ -16,17 +16,9 @@ class _SplashPageState extends State<SplashPage>
   CompositeSubscription _compositeSubscription = CompositeSubscription();
   SplashBloc _splashBloc = SplashBloc(BlocProvider.getBloc<Repository>());
 
-  AnimationController controller;
-  Animation<double> animation;
-
   @override
   void initState() {
     super.initState();
-    controller =
-        new AnimationController(duration: Duration(seconds: 3), vsync: this)
-          ..addListener(() => setState(() {}));
-    animation = Tween(begin: 800.0, end: 0.0).animate(controller);
-    controller.forward();
     _compositeSubscription
         .add(_splashBloc.getUserName().listen((name) => _handleName(name)));
   }
@@ -43,7 +35,6 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   void dispose() {
-    controller.dispose();
     _compositeSubscription.dispose();
     super.dispose();
   }
@@ -52,11 +43,8 @@ class _SplashPageState extends State<SplashPage>
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
-        body: Transform.translate(
-          offset: Offset(0.0, animation.value),
-          child: ListView(
-            children: <Widget>[
-              Stack(
+        body: Center(
+            child: Stack(
                 children: <Widget>[
                   ClipPath(
                     clipper: WaveClipper2(),
@@ -101,11 +89,7 @@ class _SplashPageState extends State<SplashPage>
                   ),
                 ],
               ),
-              SizedBox(
-                height: 30,
-              ),
-            ],
           ),
-        ));
+        );
   }
 }

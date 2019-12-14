@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/models/response_recenttracks.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/presentation/screens/main/scrobbles/scrobbles_bloc.dart';
@@ -79,7 +80,7 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
                     _advancedClicked(context);
                   },
                   child: Text(
-                    "See more...",
+                    SEE_MORE,
                     style: TextStyle(fontSize: 18, color: Colors.white70),
                     textAlign: TextAlign.end,
                   ));
@@ -104,14 +105,13 @@ class ScrobblessFragmentState extends State<ScrobblesFragment> {
               Track track = widget._tracks[index];
               String url;
               if (track.image[3].text == "") {
-                url =
-                    "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+                url = EMPTY_PICTURE;
               } else {
                 url = track.image[3].text;
               }
               String date;
               if (track.date == null) {
-                date = "Scrobling now";
+                date = SCROBBLING_NOW;
               } else {
                 date = track.date.text;
               }

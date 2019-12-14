@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/repository.dart';
 import 'package:last_fm/exceptions/exceptions.dart';
 import 'package:last_fm/presentation/screens/main/main_page.dart';
@@ -107,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
-                            hintText: "Login",
+                            hintText: LOGIN,
                             prefixIcon: Material(
                               elevation: 0,
                               borderRadius:
@@ -134,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
-                            hintText: "Login",
+                            hintText: LOGIN,
                             prefixIcon: Material(
                               elevation: 0,
                               borderRadius:
@@ -174,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
-                            hintText: "Password",
+                            hintText: PASSWORD,
                             prefixIcon: Material(
                               elevation: 0,
                               borderRadius:
@@ -202,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         cursorColor: Colors.deepOrange,
                         decoration: InputDecoration(
-                            hintText: "Password",
+                            hintText: PASSWORD,
                             prefixIcon: Material(
                               elevation: 0,
                               borderRadius:
@@ -237,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: FlatButton(
                             child: Text(
-                              "Login",
+                              LOGIN,
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
@@ -260,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                               _platformProgressIndicator(),
                               FlatButton(
                                   child: Text(
-                                    "Login",
+                                    LOGIN,
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w700,
@@ -279,7 +280,7 @@ class _LoginPageState extends State<LoginPage> {
           Center(
               child: GestureDetector(
             child: Text(
-              "FORGOT PASSWORD ?",
+              FORGOT_PASSWORD,
               style: TextStyle(
                   color: Colors.red, fontSize: 12, fontWeight: FontWeight.w700),
             ),
@@ -294,14 +295,14 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "Don't have an Account ? ",
+                NOT_ACCOUNT,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.normal),
               ),
               GestureDetector(
-                child: Text("Sign Up ",
+                child: Text(SIGN_UP,
                     style: TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.w500,
@@ -340,7 +341,7 @@ class _LoginPageState extends State<LoginPage> {
   _loginClicked() {
     _hideKeyboard();
     if (_name == "" || _password == "") {
-      _uiCommonComponent.showErrorMessage("Empty Fields!", context);
+      _uiCommonComponent.showErrorMessage(EMPTY_FIELDS, context);
       return;
     }
     _compositeSubscription.add(_loginBloc
@@ -363,13 +364,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _forgotPasswordURL() async {
-    const url = 'https://www.last.fm/settings/lostpassword';
-    _uiCommonComponent.openUrl(url, context);
+    _uiCommonComponent.openUrl(FORGOT_PASSWORD_URL, context);
   }
 
   _signUpURL() async {
-    const url = 'https://www.last.fm/join?next=/settings';
-    _uiCommonComponent.openUrl(url, context);
+    _uiCommonComponent.openUrl(SIGN_UP_URL, context);
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/enums/enums.dart';
 import 'package:last_fm/data/models/response_user.dart';
 import 'package:last_fm/data/repository.dart';
@@ -27,11 +28,11 @@ class MainBloc extends BlocBase {
   Observable<String> getPeriodText() {
     return _periodSubject.flatMap((position) {
       if (position == 0) {
-        return Observable.just("Scrobbles");
+        return Observable.just(SCROBBLES_NAMING);
       } else {
         return _repository
             .getPeriod()
-            .map((period) => PeriodHelper.getValue(period));
+            .map((period) => PeriodHelper.getReadableValue(period));
       }
     });
   }

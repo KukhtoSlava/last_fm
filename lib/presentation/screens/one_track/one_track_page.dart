@@ -5,10 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:last_fm/constants.dart';
 import 'package:last_fm/data/models/response_track.dart';
 import 'package:last_fm/data/repository.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:last_fm/presentation/widgets/ui_helper.dart';
 
 import 'one_track_bloc.dart';
 
@@ -35,11 +35,12 @@ class TrackPageState extends State {
   }
 
   OneTrackBloc _oneTrackBloc = OneTrackBloc(BlocProvider.getBloc<Repository>());
+  UICommonComponent _uiCommonComponent =
+      BlocProvider.getBloc<UICommonComponent>();
 
   @override
   Widget build(BuildContext context) {
-    var image =
-        "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+    var image = EMPTY_PICTURE;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -79,7 +80,7 @@ class TrackPageState extends State {
                 ResponseTrack response = snappShot.data as ResponseTrack;
                 var image = response.track.album != null
                     ? response.track.album.image[3].text
-                    : "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+                    : EMPTY_PICTURE;
                 return Stack(
                   children: <Widget>[
                     Container(
@@ -98,7 +99,7 @@ class TrackPageState extends State {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                "Scrobbles:",
+                                SCROBBLES,
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 20,
@@ -114,7 +115,7 @@ class TrackPageState extends State {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                "Listeners:",
+                                LISTENERS,
                                 style: TextStyle(
                                     color: Colors.white70, fontSize: 20),
                               ),
@@ -192,7 +193,8 @@ class TrackPageState extends State {
                             if (snappShot.data != "") {
                               return GestureDetector(
                                   onTap: () {
-                                    _openURL(snappShot.data);
+                                    _uiCommonComponent.openUrl(
+                                        snappShot.data, context);
                                   },
                                   child: Container(
                                       margin: EdgeInsets.only(top: 620.0),
@@ -213,25 +215,6 @@ class TrackPageState extends State {
             }),
       ),
     );
-  }
-
-  _openURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      _showToast("Could not launch $url");
-    }
-  }
-
-  _showToast(String message) {
-    Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
   }
 
   List<Widget> buildTagsWidgets(List<TrackTag> tags) {
