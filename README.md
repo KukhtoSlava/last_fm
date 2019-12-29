@@ -1,6 +1,6 @@
 # last_fm
 
-Clien for Last.Fm resources.
+Client for Last.Fm portal.
 
 ## Sample of application on flutter for Android and IOS platforms.
 
